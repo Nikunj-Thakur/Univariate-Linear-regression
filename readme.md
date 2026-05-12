@@ -112,7 +112,7 @@ $$\hat{y}_{\text{new}} = b_0 + b_1 \cdot x_{\text{new}}$$
 ```
 MachineLearning/
 │
-├── housing_prices.py                 # Main regression analysis script
+├── happiness_index_model.py          # Main regression analysis script
 │   ├── Loads GDP vs Happiness data
 │   ├── Calculates slope and intercept
 │   ├── Evaluates model cost (MSE)
@@ -166,7 +166,7 @@ Implements the Mean Squared Error (MSE) cost function:
 - **Comparison**: Allows comparing different models objectively
 - **Reusability**: Can be used with different regression approaches
 
-#### `housing_prices.py` (Main Script)
+#### `happiness_index_model.py` (Main Script)
 The primary execution file that:
 - Loads the GDP vs Happiness dataset using pandas
 - Implements the linear regression pipeline
@@ -193,7 +193,7 @@ pip install pandas numpy matplotlib
 
 ### Execution
 ```bash
-python housing_prices.py
+python happiness_index_model.py
 ```
 
 ### Expected Output
