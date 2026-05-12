@@ -209,6 +209,8 @@ python housing_prices.py
    ```
 
 3. **Visualization**: Shows a scatter plot of actual values with the fitted regression line
+   
+   ![Univariate Linear Regression Plot](Univariate%20Linear%20Regression%20plot.png)
 
 4. **Prediction**: Makes a prediction for a new country
    ```
