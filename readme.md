@@ -79,6 +79,26 @@ $$b_0 = \bar{y} - b_1 \cdot \bar{x}$$
 
 This ensures the regression line passes through the point $(\bar{x}, \bar{y})$
 
+### Cost Function (Mean Squared Error)
+
+To evaluate how well our regression line fits the data, we use the **Mean Squared Error (MSE)** cost function:
+
+$$J(b_0, b_1) = \frac{1}{2m} \sum_{i=1}^{m} (\hat{y}_i - y_i)^2$$
+
+Where:
+- $m$ = number of data points
+- $\hat{y}_i$ = predicted value for point $i$
+- $y_i$ = actual value for point $i$
+- The difference $(\hat{y}_i - y_i)$ is called the **residual** or prediction error
+
+**What it measures:**
+- The average squared distance between predicted and actual values
+- Lower cost = better fit (predictions closer to actual data)
+- Squaring the errors penalizes large mistakes more heavily
+- The factor of $\frac{1}{2m}$ normalizes the cost across different dataset sizes
+
+This cost function quantifies how well the regression line explains the relationship between GDP and happiness.
+
 ### Making Predictions
 
 For any given GDP value, predict the life satisfaction:
@@ -95,6 +115,7 @@ MachineLearning/
 ├── housing_prices.py                 # Main regression analysis script
 │   ├── Loads GDP vs Happiness data
 │   ├── Calculates slope and intercept
+│   ├── Evaluates model cost (MSE)
 │   ├── Generates predictions
 │   ├── Visualizes results with scatter + regression line
 │   └── Makes predictions for new countries
@@ -103,7 +124,10 @@ MachineLearning/
 │   ├── mean()                        # Calculates arithmetic mean
 │   ├── mean_difference()             # Computes deviations from mean
 │   ├── multiply_mean_differences_and_sum()  # Numerator calculation
-│   └── mean_square()                 # Denominator calculation
+│   └── mean_diff_square()            # Denominator calculation
+│
+├── cost_function.py                  # Cost evaluation module
+│   └── calculate_cost()              # Computes Mean Squared Error (MSE)
 │
 ├── gdp-vs-happiness.csv              # Dataset with countries' data
 │   ├── Entity (Country name)
@@ -122,26 +146,34 @@ MachineLearning/
 
 ### File Descriptions
 
-#### `housing_prices.py` (Main Script)
-The primary execution file that:
-- Loads the GDP vs Happiness dataset using pandas
-- Implements the linear regression pipeline
-- Calculates the best-fit line parameters
-- Generates visualizations using matplotlib
-- Makes predictions on new data (e.g., Cyprus)
-
 #### `linear_regression_parameters.py` (Utility Functions)
 Contains modular helper functions for mathematical operations:
 - `mean(arr)`: Computes the average of an array
 - `mean_difference(arr, mean)`: Returns array of deviations from the mean
 - `muliply_mean_differences_and_sum(arrX, arrY)`: Calculates sum of products of paired deviations
-- `mean_square(arr)`: Computes sum of squared values
+- `mean_diff_square(arr)`: Computes sum of squared values
 
-**Why separate files?**
-- **Code Organization**: Separates mathematical utilities from application logic
-- **Reusability**: Functions can be imported and used in other analyses
-- **Maintainability**: Easier to modify formulas without touching the main script
-- **Testability**: Helper functions can be unit tested independently
+#### `cost_function.py` (Cost Evaluation)
+Implements the Mean Squared Error (MSE) cost function:
+- `calculate_cost(x_train, y_train, b, w)`: Computes how well the regression line fits the data
+  - Takes predicted parameters (intercept `b`, slope `w`) and actual data
+  - Returns the average squared error between predictions and actual values
+  - Lower cost indicates a better-fitting regression model
+
+**Why a separate cost function?**
+- **Model Evaluation**: Quantifies prediction accuracy
+- **Optimization**: Can be minimized to find best parameters (basis for gradient descent)
+- **Comparison**: Allows comparing different models objectively
+- **Reusability**: Can be used with different regression approaches
+
+#### `housing_prices.py` (Main Script)
+The primary execution file that:
+- Loads the GDP vs Happiness dataset using pandas
+- Implements the linear regression pipeline
+- Calculates the best-fit line parameters
+- Evaluates the cost function to measure model quality
+- Generates visualizations using matplotlib
+- Makes predictions on new data (e.g., Cyprus)
 
 #### `gdp-vs-happiness.csv`
 Real-world dataset containing:
@@ -166,19 +198,22 @@ python housing_prices.py
 
 ### Expected Output
 
-1. **Regression Equation**: Displays the best-fit line formula
+1. **Cost Function**: Displays the Mean Squared Error for the fitted model
    ```
-   Best fit line equation is: y(hat) = 2.5 + 0.00005 x_i
+   Cost function evaluates to 15102121326.38
    ```
 
-2. **Visualization**: Shows a scatter plot of actual values with the fitted regression line
-   
-   ![Univariate Linear Regression Plot](Univariate%20Linear%20Regression%20plot.png)
+2. **Regression Equation**: Shows the best-fit line formula
+   ```
+   Best fit line equation is: y(hat) = 4.7 + 0.00003163 x_i
+   ```
 
-3. **Prediction**: Makes a prediction for a new country
+3. **Visualization**: Shows a scatter plot of actual values with the fitted regression line
+
+4. **Prediction**: Makes a prediction for a new country
    ```
    Predict the happiness index of country 'Cyprus' having a GDP per capita of 37655
-   Happiness Index is 3.4
+   Happiness Index is 5.873208109174731
    ```
 
 ---
@@ -257,13 +292,19 @@ Here's what happens when you run the script:
    ├─ For each training point: ŷᵢ = b0 + b1 * xᵢ
    └─ For new countries: ŷ = b0 + b1 * x_new
 
-5. Visualize Results
+5. Evaluate Cost Function
+   ├─ Calculate residuals: (ŷᵢ - yᵢ) for each point
+   ├─ Square each residual
+   ├─ Sum all squared residuals
+   └─ MSE = (1/2m) * Σ(ŷᵢ - yᵢ)²
+
+6. Visualize Results
    ├─ Plot actual values as red X markers
    ├─ Plot predicted values as blue line
    └─ Add labels and legend
 
-6. Display Results
-   └─ Print equation and specific predictions
+7. Display Results
+   └─ Print equation, cost, and specific predictions
 ```
 
 ---
