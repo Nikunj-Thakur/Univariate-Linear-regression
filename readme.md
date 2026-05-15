@@ -24,6 +24,12 @@ This project implements **univariate linear regression from scratch** to explore
 
 ## 🤔 Understanding the Problem
 
+### Dataset Visualization
+
+![GDP vs Life Satisfaction - Global Overview](gdp_vs_happiness_overview.png)
+
+*This scatter plot shows the relationship between economic prosperity and human well-being across countries worldwide.*
+
 ### The Research Question
 *"Does a country's GDP per capita influence the happiness level of its citizens?"*
 
@@ -108,7 +114,14 @@ $$\hat{y}_{\text{new}} = b_0 + b_1 \cdot x_{\text{new}}$$
 ---
 
 ## � Two Approaches to Finding Optimal Parameters
+### Visual Comparison
 
+![Analytical vs Brute Force Optimization Comparison](optimization_approaches_comparison.png)
+
+*Comparison diagram showing:*
+- **Left**: Analytical solution using closed-form formulas (fast, exact)
+- **Right**: Brute force grid search (slow, approximate but visual)
+- **Bottom**: Both converge to the same optimal parameters (w, b)
 ### Approach 1: Analytical Solution (Least Squares)
 
 **File:** `happiness_index_model.py`
@@ -293,9 +306,14 @@ Happiness Index is 5.873208109174731
 ```
 
 **Visualization Output:**
-- Scatter plot showing all countries' GDP vs Life satisfaction data
-- Blue regression line showing the predicted relationship
-- Cyprus prediction point highlighted
+
+![Univariate Linear Regression - Scatter Plot with Best Fit Line](Univariate%20Linear%20Regression%20plot.png)
+
+*The scatter plot shows:*
+- **Red X markers**: Actual data points (countries) showing their GDP vs Life satisfaction
+- **Blue line**: Best-fit regression line showing the predicted relationship
+- **Equation**: y(hat) = 4.7 + 0.00003163 x_i (displayed in plot)
+- **Clear positive trend**: As GDP increases, life satisfaction increases
 
 #### Brute Force Optimization (Learning Tool)
 ```bash
@@ -310,17 +328,26 @@ Best b: 4.7037
 ```
 
 **Visualization Output:**
-- **3D Surface Plot**: Shows the cost function as a 3D surface across all w and b values
-  - X-axis: w (slope) values from -0.000035 to 0.000035
-  - Y-axis: b (intercept) values from 4.65 to 4.75
-  - Z-axis: Cost values (color-coded)
-  - Reveals the quadratic bowl shape of the cost function
-  
-- **Contour Plot**: 2D projection showing cost level curves
-  - Elliptical contours centered at the minimum
-  - Red star (★) marks the optimal parameters
-  - Contour labels show cost values
-  - Makes it easy to see the minimum at a glance
+
+![Cost Function Visualization - 3D Surface and Contour Plot](cost_function_visualization.png)
+
+*The combined visualization shows:*
+
+**Left Panel - 3D Surface Plot:**
+- **X-axis**: w (slope) values from -0.000035 to 0.000035
+- **Y-axis**: b (intercept) values from 4.65 to 4.75
+- **Z-axis**: Cost values (color-coded, viridis colormap)
+- **Shape**: Smooth quadratic bowl indicating a convex optimization landscape
+- **Peak**: Highest cost at corners of the grid
+- **Valley**: Minimum cost at the center (optimal parameters)
+
+**Right Panel - Contour Plot with Optimal Point:**
+- **Concentric Ellipses**: Level curves of the cost function
+- **Dense inner ellipses**: Rapid cost changes near the minimum
+- **Sparse outer ellipses**: Gradual cost changes far from the minimum
+- **Red Star (★)**: Marks the optimal parameters (w ≈ 0.00003163, b ≈ 4.7)
+- **Legend**: Displays exact coordinates of the minimum
+- **Insight**: The elliptical shape explains why optimization algorithms converge quickly
 
 ---
 
@@ -350,6 +377,18 @@ Best b: 4.7037
 - **Univariate Model**: Uses only one feature; more sophisticated models (multivariate regression) would be more accurate
 - **Time Lag**: Economic changes may take time to affect reported well-being
 - **Cultural Differences**: Happiness reporting varies across cultures and value systems
+
+### Residual Analysis
+
+![Prediction Residuals Distribution](residuals_analysis.png)
+
+*The residuals plot shows:*
+- **Residuals**: Differences between predicted and actual happiness values (ŷᵢ - yᵢ)
+- **Pattern**: Residuals scattered around zero indicate a good model fit
+- **Outliers**: Countries with large residuals (positive/negative) have happiness levels that deviate from the GDP prediction
+- **Interpretation**: 
+  - Large positive residuals = countries happier than GDP predicts (strong social fabric, low inequality)
+  - Large negative residuals = countries less happy than GDP predicts (high inequality, poor governance)
 
 ---
 
@@ -438,6 +477,19 @@ By implementing linear regression from scratch, you'll understand:
 ---
 
 ## 🔄 Algorithm Walk-Through
+
+### Visual Process Flow
+
+![Linear Regression Algorithm Process Flow](algorithm_flowchart.png)
+
+*This flowchart illustrates the step-by-step process of fitting a linear regression model:*
+- **Data Loading**: Reading GDP and happiness data from CSV
+- **Parameter Calculation**: Computing slope and intercept using mathematical formulas
+- **Prediction**: Generating predictions for training and new data
+- **Evaluation**: Calculating the cost function to measure model quality
+- **Visualization**: Creating plots to visualize results and predictions
+
+### Step-by-Step Execution
 
 Here's what happens when you run the script:
 
