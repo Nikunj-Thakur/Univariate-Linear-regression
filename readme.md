@@ -24,12 +24,6 @@ This project implements **univariate linear regression from scratch** to explore
 
 ## 🤔 Understanding the Problem
 
-### Dataset Visualization
-
-![GDP vs Life Satisfaction - Global Overview](gdp_vs_happiness_overview.png)
-
-*This scatter plot shows the relationship between economic prosperity and human well-being across countries worldwide.*
-
 ### The Research Question
 *"Does a country's GDP per capita influence the happiness level of its citizens?"*
 
@@ -55,19 +49,19 @@ This project implements **univariate linear regression from scratch** to explore
 
 The goal is to find the best-fit line through the data points:
 
-$$\hat{y} = b_0 + b_1 \cdot x$$
+$$\hat{y} = b + w \cdot x$$
 
 Where:
 - $\hat{y}$ = predicted life satisfaction
 - $x$ = GDP per capita
-- $b_1$ = slope (coefficient)
-- $b_0$ = intercept (y-intercept)
+- $w$ = slope (coefficient)
+- $b$ = intercept (y-intercept)
 
 ### Calculating the Slope
 
 The slope quantifies how much life satisfaction changes for each unit increase in GDP per capita:
 
-$$b_1 = \frac{\sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^{n} (x_i - \bar{x})^2}$$
+$$w = \frac{\sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^{n} (x_i - \bar{x})^2}$$
 
 **Step-by-step breakdown:**
 1. Calculate the mean of X: $\bar{x} = \frac{\sum x_i}{n}$
@@ -81,7 +75,7 @@ $$b_1 = \frac{\sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^{n} (x_i
 
 Once the slope is determined, find where the line crosses the y-axis:
 
-$$b_0 = \bar{y} - b_1 \cdot \bar{x}$$
+$$b = \bar{y} - w \cdot \bar{x}$$
 
 This ensures the regression line passes through the point $(\bar{x}, \bar{y})$
 
@@ -89,7 +83,7 @@ This ensures the regression line passes through the point $(\bar{x}, \bar{y})$
 
 To evaluate how well our regression line fits the data, we use the **Mean Squared Error (MSE)** cost function:
 
-$$J(b_0, b_1) = \frac{1}{2m} \sum_{i=1}^{m} (\hat{y}_i - y_i)^2$$
+$$J(b, w) = \frac{1}{2m} \sum_{i=1}^{m} (\hat{y}_i - y_i)^2$$
 
 Where:
 - $m$ = number of data points
@@ -109,7 +103,7 @@ This cost function quantifies how well the regression line explains the relation
 
 For any given GDP value, predict the life satisfaction:
 
-$$\hat{y}_{\text{new}} = b_0 + b_1 \cdot x_{\text{new}}$$
+$$\hat{y}_{\text{new}} = b + w \cdot x_{\text{new}}$$
 
 ---
 
@@ -132,8 +126,8 @@ The **mathematical/closed-form approach** calculates the exact optimal parameter
 - **Efficiency**: Computationally efficient (O(n) complexity)
 - **Accuracy**: Exact solution (no approximation)
 - **Method**: 
-  - Computes slope: $b_1 = \frac{\sum(x_i - \bar{x})(y_i - \bar{y})}{\sum(x_i - \bar{x})^2}$
-  - Computes intercept: $b_0 = \bar{y} - b_1 \cdot \bar{x}$
+  - Computes slope: $w = \frac{\sum(x_i - \bar{x})(y_i - \bar{y})}{\sum(x_i - \bar{x})^2}$
+  - Computes intercept: $b = \bar{y} - w \cdot \bar{x}$
 
 **Results for GDP vs Happiness dataset:**
 - **Slope (w)**: 0.00003163 (extremely small)
@@ -378,75 +372,6 @@ Best b: 4.7037
 - **Time Lag**: Economic changes may take time to affect reported well-being
 - **Cultural Differences**: Happiness reporting varies across cultures and value systems
 
-### Residual Analysis
-
-![Prediction Residuals Distribution](residuals_analysis.png)
-
-*The residuals plot shows:*
-- **Residuals**: Differences between predicted and actual happiness values (ŷᵢ - yᵢ)
-- **Pattern**: Residuals scattered around zero indicate a good model fit
-- **Outliers**: Countries with large residuals (positive/negative) have happiness levels that deviate from the GDP prediction
-- **Interpretation**: 
-  - Large positive residuals = countries happier than GDP predicts (strong social fabric, low inequality)
-  - Large negative residuals = countries less happy than GDP predicts (high inequality, poor governance)
-
----
-
-## 🔍 Troubleshooting & Common Issues
-
-### Import Error: ModuleNotFoundError
-**Problem**: `ModuleNotFoundError: No module named 'happiness_index_model'`
-
-**Solution**: Ensure the working directory is the `Univariate Linear Regression` folder when running the scripts, or add the directory to Python's path:
-
-```python
-import sys
-import os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'Univariate Linear Regression'))
-```
-
-### Parameter Order Error
-**Problem**: Different cost values between models (e.g., 0.35 vs 15 billion)
-
-**Cause**: Cost function expects parameters in order `(x_train, y_train, b, w)` but they were being passed as `(x_train, y_train, w, b)`
-
-**Solution**: Verify the parameter order when calling `calculate_cost()`:
-```python
-# Correct ✓
-cost = calculate_cost(x_train, y_train, intercept, slope)  # b first, then w
-
-# Incorrect ✗
-cost = calculate_cost(x_train, y_train, slope, intercept)
-```
-
-### Contour Plot Issues
-**Problem**: Contours appear as straight lines instead of ellipses
-
-**Solution**: 
-1. Use linear level spacing instead of logarithmic:
-   ```python
-   levels=20  # Linear spacing
-   # Instead of:
-   # levels=np.logspace(-1, 3, 20)  # Logarithmic spacing
-   ```
-
-2. Ensure proper aspect ratio handling:
-   ```python
-   ax2.set_aspect('auto')
-   ```
-
-### Grid Search Not Finding Optimum
-**Problem**: Brute force grid search gives different results than analytical solution
-
-**Cause**: Grid range doesn't contain the true optimum or resolution is too coarse
-
-**Solution**: Adjust grid ranges based on expected parameter values:
-```python
-# For this dataset:
-w_values = np.linspace(-0.000035, 0.000035, 1000)  # Tight range for small slope
-b_values = np.linspace(4.65, 4.75, 1000)            # Focus around intercept ~4.7
-```
-
 ---
 
 ## 🎓 Learning Outcomes
@@ -497,21 +422,21 @@ Here's what happens when you run the script:
 1. Load CSV Data
    └─ Read GDP per capita and Life satisfaction columns
 
-2. Calculate Slope (b1)
+2. Calculate Slope (w)
    ├─ Find mean of X (GDP values)
    ├─ Find mean of Y (Happiness values)
    ├─ Compute deviations: (X - X̄) and (Y - Ȳ)
    ├─ Calculate numerator: Σ(X - X̄)(Y - Ȳ)
    ├─ Calculate denominator: Σ(X - X̄)²
-   └─ b1 = numerator / denominator
+   └─ w = numerator / denominator
 
-3. Calculate Intercept (b0)
-   ├─ Already have b1 and means
-   └─ b0 = Ȳ - b1 * X̄
+3. Calculate Intercept (b)
+   ├─ Already have w and means
+   └─ b = Ȳ - w * X̄
 
 4. Generate Predictions
-   ├─ For each training point: ŷᵢ = b0 + b1 * xᵢ
-   └─ For new countries: ŷ = b0 + b1 * x_new
+   ├─ For each training point: ŷᵢ = b + w * xᵢ
+   └─ For new countries: ŷ = b + w * x_new
 
 5. Evaluate Cost Function
    ├─ Calculate residuals: (ŷᵢ - yᵢ) for each point
@@ -584,39 +509,6 @@ To enhance this project:
    - Troubleshooting section for common issues
    - Grid range recommendations for similar datasets
    - Parameter order documentation
-
-### Bug Fixes
-
-1. **Parameter Order Bug** (Fixed)
-   - **Issue**: `cost_function.py` expects `(x_train, y_train, b, w)` but was being called as `(x_train, y_train, w, b)`
-   - **Impact**: Cost values were completely incorrect (e.g., 15 billion instead of 0.35)
-   - **Fix**: Corrected parameter order in `happiness_index_model.py`
-
-2. **Import Path Issue** (Fixed)
-   - **Issue**: `cost.py` in root directory couldn't find modules in subdirectory
-   - **Solution**: Added dynamic path handling using `sys.path.insert()`
-
-3. **Visualization Issues** (Fixed)
-   - **Straight Line Contours**: Switched from logarithmic to linear level spacing
-   - **Missing Minimum Point**: Added explicit marker for optimal parameters on contour plot
-   - **Poor Aspect Ratio**: Added `set_aspect('auto')` for proper visualization
-
-### Technical Improvements
-
-| Component | Before | After |
-|-----------|--------|-------|
-| **Contour Levels** | `np.logspace(-1, 3, 20)` | `levels=20` (linear) |
-| **Minimum Marker** | Not visible | Red star with coordinates |
-| **Cost Display** | `.0f` (rounded to 0) | `.2f` (2 decimal places) |
-| **Parameter Display** | Default precision | `.10f` (10 decimal places) |
-
-### Validation Results
-
-Both approaches now produce **identical results**:
-- **Slope (w)**: 3.162811709526479e-05
-- **Intercept (b)**: 4.7
-- **Minimum Cost**: 0.35
-- **Cyprus Prediction**: 5.873 (happiness index)
 
 ---
 
