@@ -110,7 +110,7 @@ $$\hat{y}_{\text{new}} = b + w \cdot x_{\text{new}}$$
 ## � Two Approaches to Finding Optimal Parameters
 ### Visual Comparison
 
-![Analytical vs Brute Force Optimization Comparison](optimization_approaches_comparison.png)
+# Analytical vs Brute Force Optimization Comparison
 
 *Comparison diagram showing:*
 - **Left**: Analytical solution using closed-form formulas (fast, exact)
@@ -405,7 +405,7 @@ By implementing linear regression from scratch, you'll understand:
 
 ### Visual Process Flow
 
-![Linear Regression Algorithm Process Flow](algorithm_flowchart.png)
+# Linear Regression Algorithm Process Flow
 
 *This flowchart illustrates the step-by-step process of fitting a linear regression model:*
 - **Data Loading**: Reading GDP and happiness data from CSV
