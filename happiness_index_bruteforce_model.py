@@ -39,8 +39,13 @@ print(f"Minimum Cost: {min_cost:.2f}")
 print(f"Best w: {best_w:.10f}")
 print(f"Best b: {best_b:.10f}")
 
+
+
 fig = plt.figure(figsize=(12, 5))
 
+# -----------------------------------
+# Surface Plot
+# -----------------------------------
 ax1 = fig.add_subplot(1, 2, 1, projection='3d')
 
 surface = ax1.plot_surface(
@@ -54,7 +59,6 @@ ax1.set_xlabel('w')
 ax1.set_ylabel('b')
 ax1.set_zlabel('Cost J(w,b)')
 ax1.set_title('Cost Function Surface')
-
 fig.colorbar(surface, ax=ax1, shrink=0.5)
 
 # -----------------------------------
