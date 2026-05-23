@@ -68,7 +68,7 @@ ax2 = fig.add_subplot(1, 2, 2)
 
 contour = ax2.contour(
     W, B, J,
-    levels=20,
+    levels=10,
     cmap='viridis'
 )
 

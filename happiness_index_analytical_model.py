@@ -21,8 +21,7 @@ print(f"Cost function evaluates to {cost:.2f}")
 
 y_hat = lrp.calculate_predicted_values(slope, intercept, x_train, y_train)
 
-print(
-    f"Best fit line equation is : y(hat) = {intercept:.1f} + {slope:.8f} x_i")
+print(f"Best fit line equation is : y(hat) = {intercept:.1f} + {slope:.8f} x_i")
 
 print("Predict the happiness index of country 'Cyprus' having a GDP per capita of 37655")
 x_test = 37655
