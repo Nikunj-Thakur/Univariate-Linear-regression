@@ -1,20 +1,23 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-import cost_function as cf
+import utility_functions as cf
 from mpl_toolkits.mplot3d import Axes3D
 
 df = pd.read_csv("Univariate Linear Regression\\gdp-vs-happiness.csv")
 
 x = df['GDP per capita'].to_numpy()
+x_mean = x.mean()
+x_std = x.std()
+x = (x - x_mean) / x_std
 y = df['Life satisfaction'].astype(float).to_numpy()
 m = len(x)
 
 # -----------------------------------
 # Create grid of w and b values
 # -----------------------------------
-w_values = np.linspace(-0.000035, 0.000035, 1000)
-b_values = np.linspace(4.65, 4.75, 1000)
+w_values = np.linspace(0, 1, 1000)
+b_values = np.linspace(5, 6, 1000)
 
 W, B = np.meshgrid(w_values, b_values)
 
@@ -36,8 +39,8 @@ best_w = W[min_index]
 best_b = B[min_index]
 
 print(f"Minimum Cost: {min_cost:.2f}")
-print(f"Best w: {best_w:.10f}")
-print(f"Best b: {best_b:.10f}")
+print(f"Best w: {best_w:.3f}")
+print(f"Best b: {best_b:.3f}")
 
 
 
