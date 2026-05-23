@@ -17,7 +17,7 @@ import numpy as np
 # and executes operations in compiled C code with CPU-level optimizations [SIMD (Single Instruction, Multiple Data) + caching).
 
 def calculate_cost(x, y, b, w):
-    m = len(x))
+    m = len(x)
     prediction = w*x + b
     cost = np.sum((prediction-y)**2)
     return (1/(2*m)) * cost
