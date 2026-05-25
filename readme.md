@@ -359,18 +359,59 @@ $$\hat{y}_{\text{new}} = b + w \cdot x_{\text{new}}$$
 
 ---
 
-## � Two Approaches to Finding Optimal Parameters
+## 🔀 Three Approaches to Finding Optimal Parameters
+
 ### Visual Comparison
 
-# Analytical vs Brute Force Optimization Comparison
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    ANALYTICAL SOLUTION (Left)                               │
+│              Direct Mathematical Formula - FAST & EXACT                      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  Data → Apply Least Squares Formula → Instant Parameters (w, b)             │
+│                                                                              │
+│  ✅ Pros: Exact, O(n) speed, no iterations                                 │
+│  ❌ Cons: Only linear, doesn't scale to many features                      │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
 
-*Comparison diagram showing:*
-- **Left**: Analytical solution using closed-form formulas (fast, exact)
-- **Right**: Brute force grid search (slow, approximate but visual)
-- **Bottom**: Both converge to the same optimal parameters (w, b)
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    BRUTE FORCE SEARCH (Middle)                              │
+│              Grid-based Search - SLOW but VISUAL & INTUITIVE                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  Data → Create Grid (1000×1000) → Evaluate All Points → Find Minimum       │
+│                                                                              │
+│  ✅ Pros: Visualizes cost surface, guaranteed optimum, intuitive           │
+│  ❌ Cons: O(n·m²) complexity, slow for large grids, grid-dependent        │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                  GRADIENT DESCENT (Right)                                   │
+│            Iterative Optimization - PRACTICAL & SCALABLE                    │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  Data → Init (w=0, b=0) → Loop 10k times:                                  │
+│     • Compute gradients ∂J/∂w, ∂J/∂b                                       │
+│     • Update: w := w - α·∂J/∂w,  b := b - α·∂J/∂b                         │
+│     • Converge to optimum → Converged! ✓                                    │
+│                                                                              │
+│  ✅ Pros: Scalable, works for deep learning, visualize convergence         │
+│  ❌ Cons: Needs learning rate tuning, requires calculus                    │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+                    ↓ ALL THREE CONVERGE TO SAME OPTIMUM ↓
+                              w ≈ 0.815
+                              b ≈ 5.527
+                    Different paths, same destination!
+```
+
 ### Approach 1: Analytical Solution (Least Squares)
 
-**File:** `happiness_index_model.py`
+**File:** `happiness_index_analytical_model.py`
 
 The **mathematical/closed-form approach** calculates the exact optimal parameters using the least squares formulas directly:
 
@@ -382,8 +423,8 @@ The **mathematical/closed-form approach** calculates the exact optimal parameter
   - Computes intercept: $b = \bar{y} - w \cdot \bar{x}$
 
 **Results for GDP vs Happiness dataset:**
-- **Slope (w)**: 0.00003163 (extremely small)
-- **Intercept (b)**: 4.7
+- **Slope (w)**: 0.815
+- **Intercept (b)**: 5.527
 - **Minimum Cost**: 0.35
 
 ### Approach 2: Brute Force Grid Search
@@ -399,40 +440,55 @@ The **optimization/search approach** evaluates cost at many parameter combinatio
 
 **Grid Configuration for this dataset:**
 ```python
-w_values = np.linspace(-0.000035, 0.000035, 1000)  # Very tight range!
-b_values = np.linspace(4.65, 4.75, 1000)
+w_values = np.linspace(0, 1, 1000)          # Range: [0, 1]
+b_values = np.linspace(5, 6, 1000)          # Range: [5, 6]
 ```
 
-**Why these ranges?**
-- w range is extremely narrow (-0.000035 to 0.000035) because the optimal slope is very small (~0.00003)
-- b range focuses around 4.7 because that's the optimal intercept
-- These ranges ensure the grid captures the minimum cost point accurately
-
 **Results from grid search:**
-- **Best w**: ~0.00003163 (matches analytical solution)
-- **Best b**: ~4.7 (matches analytical solution)
+- **Best w**: ~0.815 (matches analytical solution)
+- **Best b**: ~5.527 (matches analytical solution)
 - **Minimum Cost**: ~0.35 (matches analytical solution)
+
+### Approach 3: Gradient Descent
+
+**File:** `happiness_index_gradientDescent_model.py`
+
+The **iterative optimization approach** starts with initial parameters and moves in the negative gradient direction:
+
+- **Iterative method**: Repeated updates using gradient information
+- **Convergence**: Requires tuning learning rate α and iterations
+- **Efficiency**: O(n × iterations) - moderate for large datasets
+- **Method**:
+  - Initialize: w = 0, b = 0
+  - Compute gradients: $\frac{\partial J}{\partial w} = \frac{1}{m}\sum(f_{wb}(x_i) - y_i) \cdot x_i$, $\frac{\partial J}{\partial b} = \frac{1}{m}\sum(f_{wb}(x_i) - y_i)$
+  - Update parameters: $w := w - \alpha \cdot \frac{\partial J}{\partial w}$, $b := b - \alpha \cdot \frac{\partial J}{\partial b}$
+  - Repeat for 10,000 iterations
+
+**Configuration:**
+```python
+iterations = 10000                          # Number of update steps
+alpha = 0.01                                # Learning rate (step size)
+```
+
+**Results from gradient descent:**
+- **Final w**: ~0.815 (converges to analytical solution)
+- **Final b**: ~5.527 (converges to analytical solution)
+- **Minimum Cost**: ~0.35 (converges to analytical solution)
+- **Convergence**: Smooth, visible in cost history plot
 
 ### Comparison Table
 
-| Aspect | Analytical (Least Squares) | Brute Force (Grid Search) |
-|--------|--------------------------|--------------------------|
-| **Accuracy** | Exact | Approximate (grid dependent) |
-| **Speed** | Very fast O(n) | Slow O(n × grid_points²) |
-| **Scalability** | Excellent | Poor for large grids |
-| **Visualization** | 2D scatter plot | 3D surface + contour plots |
-| **Understanding** | Mathematical insight | Intuitive visual understanding |
-| **Best Use Case** | Production models | Learning & visualization |
-
-### Visualization Improvements
-
-**Contour Plot Enhancements:**
-- **Linear level spacing** instead of logarithmic: Better visualization of cost variations near the optimum
-- **Red star marker**: Clearly marks the minimum cost point on the contour plot
-- **Proper aspect ratio**: Ensures elliptical contours instead of distorted lines
-- **Legend**: Shows exact coordinates of the optimal parameters
-
-The contour plot reveals the **quadratic nature** of the cost function with elliptical level sets centered at the minimum.
+| Criterion | Analytical | Brute Force | Gradient Descent |
+|:----------|:----------:|:----------:|:---------------:|
+| **Time Complexity** | O(n) | O(n × m²) | O(n × iterations) |
+| **Speed** | ⚡ Instant | 🐢 Very Slow | 🚀 Fast (~ms) |
+| **Memory** | 💾 Minimal | 💾 High (grid) | 💾 Minimal |
+| **Exact Solution** | ✅ Yes | ⚠️ Grid-dependent | ✅ Converges |
+| **Univariate** | ✅ Works | ✅ Works | ✅ Works |
+| **Multivariate** | ❌ Poor | ❌ Exponential | ✅ Excellent |
+| **Non-linear** | ❌ No | ❌ No | ✅ Yes |
+| **Visualization** | ✅ Simple | ✅ 3D + Contours | ✅ Convergence |
+| **Best Use Case** | Quick analysis | Learning/Viz | Production ML |
 
 ---
 
@@ -441,7 +497,7 @@ The contour plot reveals the **quadratic nature** of the cost function with elli
 ```
 MachineLearning/
 │
-├── happiness_index_model.py                 # Analytical least squares solution
+├── happiness_index_analytical_model.py      # ✅ Analytical least squares solution
 │   ├── Loads GDP vs Happiness data
 │   ├── Calculates slope and intercept using closed-form formulas
 │   ├── Evaluates model cost (MSE)
@@ -449,7 +505,7 @@ MachineLearning/
 │   ├── Visualizes results with scatter + regression line
 │   └── Makes predictions for new countries
 │
-├── happiness_index_bruteforce_model.py      # Brute force grid search optimization
+├── happiness_index_bruteforce_model.py      # 🔍 Brute force grid search optimization
 │   ├── Loads GDP vs Happiness data
 │   ├── Creates a grid of w (slope) and b (intercept) values
 │   ├── Evaluates cost at each grid point
@@ -457,6 +513,15 @@ MachineLearning/
 │   ├── Generates 3D surface plot of cost function
 │   ├── Generates contour plot with minimum cost marker
 │   └── Useful for visualization and understanding optimization
+│
+├── happiness_index_gradientDescent_model.py # ⬇️ Gradient descent iterative optimization
+│   ├── Loads GDP vs Happiness data
+│   ├── Initializes parameters (w=0, b=0)
+│   ├── Runs 10,000 gradient descent iterations
+│   ├── Tracks cost history and parameter path
+│   ├── Computes gradients at each step
+│   ├── Plots cost vs iteration (first 100 & last 9000)
+│   └── Visualizes gradient descent path on contour plot
 │
 ├── linear_regression_parameters.py          # Helper functions module
 │   ├── mean()                              # Calculates arithmetic mean
@@ -545,7 +610,7 @@ Slope is : 3.162811709526479e-05
 Mean of X is : 19806.920289855072
 Mean of Y is : 5.515797101449275
 Cost function evaluates to 0.35
-Best fit line equation is : y(hat) = 4.7 + 0.00003163 x_i
+Best fit line equation is : y(hat) = 5.527 + 0.815 x_i
 
 Predict the happiness index of country 'Cyprus' having a GDP per capita of 37655
 Happiness Index is 5.873208109174731
@@ -558,7 +623,7 @@ Happiness Index is 5.873208109174731
 *The scatter plot shows:*
 - **Red X markers**: Actual data points (countries) showing their GDP vs Life satisfaction
 - **Blue line**: Best-fit regression line showing the predicted relationship
-- **Equation**: y(hat) = 4.7 + 0.00003163 x_i (displayed in plot)
+- **Equation**: y(hat) = 5.527 + 0.815 x_i (displayed in plot)
 - **Clear positive trend**: As GDP increases, life satisfaction increases
 
 #### Brute Force Optimization (Learning Tool)
@@ -569,8 +634,8 @@ python happiness_index_bruteforce_model.py
 **Output Example:**
 ```
 Minimum Cost: 0.35
-Best w: 0.0000316281
-Best b: 4.7037
+Best w: 0.815
+Best b: 5.527
 ```
 
 **Visualization Output:**
@@ -580,8 +645,8 @@ Best b: 4.7037
 *The combined visualization shows:*
 
 **Left Panel - 3D Surface Plot:**
-- **X-axis**: w (slope) values from -0.000035 to 0.000035
-- **Y-axis**: b (intercept) values from 4.65 to 4.75
+- **X-axis**: w (slope) values from 0 to 1 (approx)
+- **Y-axis**: b (intercept) values from 5 to 6 (approx)
 - **Z-axis**: Cost values (color-coded, viridis colormap)
 - **Shape**: Smooth quadratic bowl indicating a convex optimization landscape
 - **Peak**: Highest cost at corners of the grid
@@ -591,7 +656,7 @@ Best b: 4.7037
 - **Concentric Ellipses**: Level curves of the cost function
 - **Dense inner ellipses**: Rapid cost changes near the minimum
 - **Sparse outer ellipses**: Gradual cost changes far from the minimum
-- **Red Star (★)**: Marks the optimal parameters (w ≈ 0.00003163, b ≈ 4.7)
+- **Red Star (★)**: Marks the optimal parameters (w ≈ 0.815, b ≈ 5.527)
 - **Legend**: Displays exact coordinates of the minimum
 - **Insight**: The elliptical shape explains why optimization algorithms converge quickly
 
