@@ -24,6 +24,7 @@ def calculate_gradient(x, y, b, w):
 
 
 def gradient_descent(x, y, w_init, b_init, alpha, iterations):
+     # An array to store cost J and prameters at each iteration primarily for graphing later
     J_history = []
     p_history = []
     b = b_init
@@ -37,10 +38,12 @@ def gradient_descent(x, y, w_init, b_init, alpha, iterations):
         b = b - alpha * dj_db
         w = w - alpha * dj_dw
 
-        if i < 100000:
+        # Save cost J at each iteration
+        if i < 100000:   # prevent resource exhaustion 
             J_history.append(calculate_cost(x, y, b, w))
             p_history.append([w, b])
 
+        # Print cost every at intervals 10 times or as many iterations if < 10
         if i % math.ceil(iterations/10) == 0:
             print(f"Iteration {i:4}: Cost {J_history[-1]:5.4f}",
                   f"dj/dw: {dj_dw:0.2f} dj/db: {dj_db:0.2f}",

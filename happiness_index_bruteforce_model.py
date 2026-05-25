@@ -62,7 +62,7 @@ ax1.set_xlabel('w')
 ax1.set_ylabel('b')
 ax1.set_zlabel('Cost J(w,b)')
 ax1.set_title('Cost Function Surface')
-fig.colorbar(surface, ax=ax1, shrink=0.5)
+fig.colorbar(surface, ax=ax1, location='left', shrink=0.5)
 
 # -----------------------------------
 # Contour Plot
@@ -76,7 +76,7 @@ contour = ax2.contour(
 )
 
 # Mark the minimum cost point
-ax2.plot(best_w, best_b, 'r*', markersize=15, label=f'Minimum (w={best_w:.10f}, b={best_b:.2f})')
+ax2.plot(best_w, best_b, 'r*', markersize=15, label=f'Minimum (w={best_w:.3f}, b={best_b:.3f})')
 
 ax2.set_xlabel('w')
 ax2.set_ylabel('b')
