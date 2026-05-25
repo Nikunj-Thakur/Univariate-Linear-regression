@@ -14,11 +14,15 @@
 
 ## 📌 Overview
 
-This project implements **univariate linear regression from scratch** to explore the relationship between **GDP per capita** and **life satisfaction (happiness index)** across different countries. Rather than using scikit-learn, the regression parameters are calculated manually using mathematical formulas to develop a deep understanding of how linear regression works under the hood.
+This project implements **univariate linear regression from scratch** using **three different optimization approaches** to explore the relationship between **GDP per capita** and **life satisfaction (happiness index)** across different countries. Rather than using scikit-learn, the regression parameters are calculated manually using mathematical formulas to develop a deep understanding of how linear regression works under the hood.
 
-### 🎯 Key Objective
+### 🎯 Key Objectives
 
-> Prove the correlation between economic wealth and human happiness by implementing the foundational mathematics of linear regression from first principles.
+✅ **Analytical Approach**: Direct mathematical calculation of slope and intercept  
+✅ **Brute Force Search**: Grid-based parameter optimization  
+✅ **Gradient Descent**: Iterative optimization algorithm  
+
+> Compare three fundamental optimization techniques and understand their convergence properties and computational trade-offs.
 
 ---
 
@@ -36,6 +40,7 @@ This project implements **univariate linear regression from scratch** to explore
 - **Feature Variable (X)**: GDP per Capita (in international dollars, 2021 prices)
   - Adjusted for inflation and purchasing power parity
   - Represents average economic output per person
+  - **Data Preprocessing**: Features are standardized using Z-score normalization to prevent overflow and improve numerical stability
 
 - **Data Source**: Our World in Data, World Bank, OECD, IMF
 - **Time Period**: 2011-2025
@@ -53,31 +58,9 @@ $$\hat{y} = b + w \cdot x$$
 
 Where:
 - $\hat{y}$ = predicted life satisfaction
-- $x$ = GDP per capita
-- $w$ = slope (coefficient)
-- $b$ = intercept (y-intercept)
-
-### Calculating the Slope
-
-The slope quantifies how much life satisfaction changes for each unit increase in GDP per capita:
-
-$$w = \frac{\sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^{n} (x_i - \bar{x})^2}$$
-
-**Step-by-step breakdown:**
-1. Calculate the mean of X: $\bar{x} = \frac{\sum x_i}{n}$
-2. Calculate the mean of Y: $\bar{y} = \frac{\sum y_i}{n}$
-3. Calculate deviations from mean for each point
-4. Multiply deviations together for numerator: $(x_i - \bar{x})(y_i - \bar{y})$
-5. Square deviations for denominator: $(x_i - \bar{x})^2$
-6. Divide sum of numerator by sum of denominator
-
-### Calculating the Intercept
-
-Once the slope is determined, find where the line crosses the y-axis:
-
-$$b = \bar{y} - w \cdot \bar{x}$$
-
-This ensures the regression line passes through the point $(\bar{x}, \bar{y})$
+- $x$ = GDP per capita (standardized)
+- $w$ = slope (coefficient) / weight
+- $b$ = intercept (y-intercept) / bias
 
 ### Cost Function (Mean Squared Error)
 
@@ -89,7 +72,6 @@ Where:
 - $m$ = number of data points
 - $\hat{y}_i$ = predicted value for point $i$
 - $y_i$ = actual value for point $i$
-- The difference $(\hat{y}_i - y_i)$ is called the **residual** or prediction error
 
 **What it measures:**
 - The average squared distance between predicted and actual values
@@ -97,7 +79,277 @@ Where:
 - Squaring the errors penalizes large mistakes more heavily
 - The factor of $\frac{1}{2m}$ normalizes the cost across different dataset sizes
 
-This cost function quantifies how well the regression line explains the relationship between GDP and happiness.
+### Feature Scaling / Z-Score Standardization
+
+$$x_{scaled} = \frac{x - \bar{x}}{\sigma_x}$$
+
+**Why scale features?**
+- Prevents numerical overflow in computations
+- Improves gradient descent convergence
+- Brings features to comparable scales
+- Enhances numerical stability in iterative algorithms
+
+---
+
+## 🔄 Three Optimization Approaches
+
+### 1️⃣ Analytical Solution (Direct Formula)
+
+**Method**: Closed-form mathematical solution
+
+Calculates slope and intercept directly using the formulas:
+
+$$w = \frac{\sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^{n} (x_i - \bar{x})^2}$$
+
+$$b = \bar{y} - w \cdot \bar{x}$$
+
+**Advantages:**
+- ✅ Instant solution (no iterations needed)
+- ✅ Guaranteed to find optimal parameters
+- ✅ Computationally efficient for univariate case
+- ✅ Good for understanding the mathematics
+
+**Disadvantages:**
+- ❌ Only works for linear regression
+- ❌ Doesn't scale well to multivariate problems (requires matrix inversion)
+- ❌ No insight into convergence behavior
+
+**File**: `happiness_index_analytical_model.py`
+
+---
+
+### 2️⃣ Brute Force Search
+
+**Method**: Grid-based exhaustive search over parameter space
+
+Creates a 2D grid of all possible (w, b) values and computes the cost function for every combination, then selects the point with minimum cost.
+
+**Algorithm:**
+1. Create ranges for w and b
+2. Generate all combinations via meshgrid
+3. Compute cost J(w, b) for each combination
+4. Find the pair with minimum cost
+
+**Advantages:**
+- ✅ Guaranteed to find global optimum (within grid resolution)
+- ✅ No calculus required
+- ✅ Visualizes the cost surface clearly
+- ✅ Easy to understand concept
+
+**Disadvantages:**
+- ❌ **Computationally expensive** - O(n²) or worse in higher dimensions
+- ❌ Grid resolution limits precision
+- ❌ Impractical for large feature spaces
+- ❌ Slow convergence compared to gradient-based methods
+
+**File**: `happiness_index_bruteforce_model.py`
+
+---
+
+### 3️⃣ Gradient Descent
+
+**Method**: Iterative optimization following the negative gradient
+
+The gradient points in the direction of steepest cost increase; moving in the opposite direction minimizes cost.
+
+**Partial Derivatives (Gradients):**
+
+$$\frac{\partial J}{\partial w} = \frac{1}{m} \sum_{i=1}^{m} (f_{wb}(x_i) - y_i) \cdot x_i$$
+
+$$\frac{\partial J}{\partial b} = \frac{1}{m} \sum_{i=1}^{m} (f_{wb}(x_i) - y_i)$$
+
+**Update Rules:**
+
+$$w := w - \alpha \cdot \frac{\partial J}{\partial w}$$
+
+$$b := b - \alpha \cdot \frac{\partial J}{\partial b}$$
+
+Where $\alpha$ (alpha) is the **learning rate** - controls step size in parameter space.
+
+**Algorithm:**
+1. Initialize w and b (typically to zero)
+2. For each iteration:
+   - Compute gradients (partial derivatives)
+   - Update parameters simultaneously
+   - Track cost history
+3. Repeat until convergence
+
+**Advantages:**
+- ✅ **Scales well** to multivariate regression (deep learning)
+- ✅ Computationally efficient - O(nm) per iteration
+- ✅ Works for non-linear models (neural networks)
+- ✅ Convergence visualization available
+- ✅ Practical for real-world problems
+
+**Disadvantages:**
+- ❌ Requires calculus knowledge
+- ❌ Learning rate tuning needed (too high = divergence, too low = slow)
+- ❌ May converge to local minima (not an issue for linear regression)
+- ❌ Needs multiple iterations to converge
+
+**File**: `happiness_index_gradientDescent_model.py`
+
+**Learning Rate**: $\alpha = 0.01$ (10^-2)  
+**Iterations**: 10,000
+
+---
+
+## 📊 Visualizations & Results
+
+### Best Fit Line
+![Best Fit Line](images/ULR_Bestfit_Line_Plot.png)
+
+The scatter plot shows the actual data points (red X's) and the predicted values from the fitted regression line (blue circle). This visualization confirms the strong positive correlation between GDP per capita and life satisfaction.
+
+### Cost Surface & Contour Plot
+![Cost Surface & Contours](images/Cost_Surface_and_Contour_Plots.png)
+
+**Left panel**: 3D surface showing the cost function J(w,b) for all parameter combinations. The valley-shaped surface demonstrates that lower costs exist at specific (w, b) pairs.
+
+**Right panel**: Contour plot (bird's eye view) shows level curves of constant cost. The elliptical contours indicate the cost landscape that all three optimization methods navigate.
+
+### Gradient Descent Iteration Path
+![Gradient Descent Path](images/Gradient_Descent_Iteration_And_Path.png)
+
+**Left panel**: Cost vs. iteration for the first 100 steps - shows rapid initial descent as the algorithm quickly approaches the optimum.
+
+**Middle panel**: Cost vs. iteration from step 1000 to 10000 - shows fine convergence in later iterations approaching the true minimum.
+
+**Right panel**: Path traced by gradient descent on the contour plot. The red path shows how the algorithm spirals inward toward the minimum cost point. Compare this to the brute force grid approach!
+
+### Gradient & Quiver Plot
+![Gradient Vectors](images/Gradient_and_Quiver_Plots.png)
+
+Quiver plot displaying gradient vectors at each point in the parameter space. Vectors point in the direction of steepest cost increase. Gradient descent moves opposite to these vectors.
+
+---
+
+## 💻 Project Structure
+
+```
+Univariate Linear Regression/
+├── gdp-vs-happiness.csv                          # Dataset
+├── gdp-vs-happiness.metadata.json                # Dataset metadata
+├── utility_functions.py                          # Helper functions for both models
+│   ├── calculate_cost()                          # Vectorized MSE calculation
+│   ├── calculate_gradient()                      # Partial derivatives
+│   ├── gradient_descent()                        # Main GD algorithm
+│   ├── get_slope()                               # Analytical slope calculation
+│   ├── get_intercept()                           # Analytical intercept calculation
+│   ├── calculate_predicted_values()              # Make predictions
+│   └── [Loop versions kept as reference]         # Non-vectorized versions for learning
+│
+├── happiness_index_analytical_model.py           # ✅ Direct mathematical solution
+│   ├── Loads & standardizes data
+│   ├── Calculates slope using formula
+│   ├── Calculates intercept using formula
+│   ├── Makes predictions on test data
+│   └── Plots best fit line
+│
+├── happiness_index_bruteforce_model.py           # 🔍 Grid-based search
+│   ├── Creates meshgrid of (w, b) values
+│   ├── Computes cost for all combinations
+│   ├── Finds minimum cost pair
+│   ├── Generates 3D surface plot
+│   └── Generates contour plot
+│
+├── happiness_index_gradientDescent_model.py      # ⬇️ Iterative optimization
+│   ├── Initializes parameters
+│   ├── Runs 10,000 gradient descent iterations
+│   ├── Tracks cost history
+│   ├── Tracks parameter path
+│   ├── Plots cost vs iteration (first 100)
+│   ├── Plots cost vs iteration (last 9000)
+│   └── Plots gradient descent path on contour
+│
+├── basic_plots/                                  # Plotting utilities
+│   ├── gradient_descent_plots.py                 # Visualize gradient descent
+│   ├── simple_quiver_plot.py                     # Draw gradient vectors
+│   └── trignometric_functions_plot.py            # Math visualization
+│
+└── images/                                       # Generated visualizations
+    ├── ULR_Bestfit_Line_Plot.png
+    ├── Cost_Surface_and_Contour_Plots.png
+    ├── Gradient_Descent_Iteration_And_Path.png
+    └── Gradient_and_Quiver_Plots.png
+```
+
+---
+
+## 🚀 How to Run
+
+### Prerequisites
+```bash
+pip install numpy pandas matplotlib
+```
+
+### Run Analytical Model
+```bash
+python happiness_index_analytical_model.py
+```
+Output: Best fit equation, cost, and prediction for test case
+
+### Run Brute Force Model
+```bash
+python happiness_index_bruteforce_model.py
+```
+Output: Optimal (w, b) values and 3D/contour plots
+
+### Run Gradient Descent Model
+```bash
+python happiness_index_gradientDescent_model.py
+```
+Output: Final parameters, cost history, convergence plots, and descent path
+
+---
+
+## 🔑 Key Findings
+
+- **Strong Positive Correlation**: Higher GDP per capita is strongly associated with higher life satisfaction
+- **Analytical Solution**: Direct formula provides optimal parameters instantly
+- **Brute Force Inefficiency**: Exhaustive search finds correct answer but requires many computations
+- **Gradient Descent Efficiency**: Reaches near-optimal solution in ~10,000 iterations with smooth convergence
+- **Feature Scaling**: Z-score normalization is essential for numerical stability
+
+---
+
+## 📚 Learning Concepts Covered
+
+✅ Univariate linear regression  
+✅ Cost functions and loss minimization  
+✅ Closed-form analytical solutions  
+✅ Grid search optimization  
+✅ Gradient descent algorithm  
+✅ Partial derivatives and gradients  
+✅ Feature scaling / standardization  
+✅ Hyperparameter tuning (learning rate)  
+✅ Vectorization for efficiency  
+✅ Convergence analysis and visualization  
+
+---
+
+## 📖 Mathematical References
+
+- **Gradient Descent**: Rumelhart, D. E., Hinton, G. E., & Williams, R. J. (1986). "Learning representations by back-propagating errors."
+- **Linear Regression Theory**: Hastie, T., Tibshirani, R., & Friedman, J. (2009). "The Elements of Statistical Learning"
+- **Cost Function (MSE)**: Bishop, C. M. (2006). "Pattern Recognition and Machine Learning"
+- **Feature Scaling**: Andrew Ng's Machine Learning Course, Stanford University
+
+---
+
+## ⚖️ License
+
+MIT License - Feel free to use this project for learning and educational purposes.
+
+---
+
+## 🎓 Educational Value
+
+This project is designed for students learning machine learning fundamentals. By implementing three different optimization approaches, you gain deep intuition about:
+- Why gradient descent is essential for modern machine learning
+- How parameters affect the cost function
+- The trade-offs between different optimization methods
+- Mathematical foundations of neural networks and deep learning
 
 ### Making Predictions
 
