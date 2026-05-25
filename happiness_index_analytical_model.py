@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-import linear_regression_parameters as lrp
+import utility_functions as uf
 import utility_functions as cost
 import matplotlib.pyplot as plt
 plt.style.use('ggplot')
@@ -16,13 +16,13 @@ y_train = df['Life satisfaction'].astype(float).to_numpy()
 # x_train = np.array([2, 4, 6, 8, 10])
 # y_train = np.array([5, 9, 12, 15, 20])
 
-slope = lrp.get_slope(x_train, y_train)
+slope = uf.get_slope(x_train, y_train)
 print("Slope is :", slope)
-intercept = lrp.get_intercept(slope, x_train, y_train)
+intercept = uf.get_intercept(slope, x_train, y_train)
 cost = cost.calculate_cost(x_train, y_train, intercept, slope)
 print(f"Cost function evaluates to {cost:.2f}")
 
-y_hat = lrp.calculate_predicted_values(slope, intercept, x_train, y_train)
+y_hat = uf.calculate_predicted_values(slope, intercept, x_train, y_train)
 
 print(f"Best fit line equation is : y(hat) = {intercept:.3f} + {slope:.3f} x_i")
 
