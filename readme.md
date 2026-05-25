@@ -366,41 +366,41 @@ $$\hat{y}_{\text{new}} = b + w \cdot x_{\text{new}}$$
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                    ANALYTICAL SOLUTION (Left)                               │
-│              Direct Mathematical Formula - FAST & EXACT                      │
+│              Direct Mathematical Formula - FAST & EXACT                     │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
+│                                                                             │
 │  Data → Apply Least Squares Formula → Instant Parameters (w, b)             │
-│                                                                              │
+│                                                                             │
 │  ✅ Pros: Exact, O(n) speed, no iterations                                 │
 │  ❌ Cons: Only linear, doesn't scale to many features                      │
-│                                                                              │
+│                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                    BRUTE FORCE SEARCH (Middle)                              │
 │              Grid-based Search - SLOW but VISUAL & INTUITIVE                │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│  Data → Create Grid (1000×1000) → Evaluate All Points → Find Minimum       │
-│                                                                              │
-│  ✅ Pros: Visualizes cost surface, guaranteed optimum, intuitive           │
-│  ❌ Cons: O(n·m²) complexity, slow for large grids, grid-dependent        │
-│                                                                              │
+│                                                                             │
+│  Data → Create Grid (1000×1000) → Evaluate All Points → Find Minimum        │
+│                                                                             │
+│  ✅ Pros: Visualizes cost surface, guaranteed optimum, intuitive            │
+│  ❌ Cons: O(n·m²) complexity, slow for large grids, grid-dependent          │
+│                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                  GRADIENT DESCENT (Right)                                   │
 │            Iterative Optimization - PRACTICAL & SCALABLE                    │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│  Data → Init (w=0, b=0) → Loop 10k times:                                  │
-│     • Compute gradients ∂J/∂w, ∂J/∂b                                       │
-│     • Update: w := w - α·∂J/∂w,  b := b - α·∂J/∂b                         │
+│                                                                             │
+│  Data → Init (w=0, b=0) → Loop 10k times:                                   │
+│     • Compute gradients ∂J/∂w, ∂J/∂b                                        │
+│     • Update: w := w - α·∂J/∂w,  b := b - α·∂J/∂b                           │
 │     • Converge to optimum → Converged! ✓                                    │
-│                                                                              │
+│                                                                             │
 │  ✅ Pros: Scalable, works for deep learning, visualize convergence         │
 │  ❌ Cons: Needs learning rate tuning, requires calculus                    │
-│                                                                              │
+│                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 
                     ↓ ALL THREE CONVERGE TO SAME OPTIMUM ↓
