@@ -4,13 +4,14 @@ import pandas as pd
 import utility_functions as cf
 from mpl_toolkits.mplot3d import Axes3D
 
-df = pd.read_csv("Univariate Linear Regression\\gdp-vs-happiness.csv")
+df = pd.read_csv("Univariate Linear Regression\\WHR_2024.csv")
+df = df.dropna() 
 
-x = df['GDP per capita'].to_numpy()
+x = df['gdp_per_capita'].to_numpy()
 x_mean = x.mean()
 x_std = x.std()
 x = (x - x_mean) / x_std
-y = df['Life satisfaction'].astype(float).to_numpy()
+y = df['happiness_score'].astype(float).to_numpy()
 m = len(x)
 
 # -----------------------------------

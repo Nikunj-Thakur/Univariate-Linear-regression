@@ -6,10 +6,10 @@ import matplotlib.pyplot as plt
 plt.style.use('ggplot')
 
 
-df = pd.read_csv("Univariate Linear Regression\\gdp-vs-happiness.csv")
-
-x_train = df['GDP per capita'].to_numpy()
-y_train = df['Life satisfaction'].astype(float).to_numpy()
+df = pd.read_csv("Univariate Linear Regression\\WHR_2024.csv")
+df = df.dropna() 
+x_train = df['gdp_per_capita'].to_numpy()
+y_train = df['happiness_score'].astype(float).to_numpy()
 
 # Scaling the feture using Z-score standardisation to prevent overflow
 x_mean = x_train.mean()
@@ -29,8 +29,8 @@ y_hat = uf.calculate_predicted_values(slope, intercept, x_train, y_train)
 
 print(f"Best fit line equation is : y(hat) = {intercept:.3f} + {slope:.3f} x_i")
 
-print("Predict the happiness index of country 'Cyprus' having a GDP per capita of 37655")
-x_test = 37655
+print("Predict the happiness index of country 'India' having a GDP per capita of 1.166")
+x_test = 1.166
 X_new_scaled = (x_test - x_mean) / x_std
 prediction = intercept+(slope) * X_new_scaled
 print("Happiness Index is", f"{prediction:0.2f}")

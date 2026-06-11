@@ -10,10 +10,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.pyplot as plt
 
-df = pd.read_csv("Univariate Linear Regression\\gdp-vs-happiness.csv")
-
-x_train = df['GDP per capita'].to_numpy()
-y_train = df['Life satisfaction'].astype(float).to_numpy()
+df = pd.read_csv("Univariate Linear Regression\\WHR_2024.csv")
+df = df.dropna() 
+x_train = df['gdp_per_capita'].to_numpy()
+y_train = df['happiness_score'].astype(float).to_numpy()
 
 # Scaling the feture using Z-score standardisation to prevent overflow
 x_mean = x_train.mean()
